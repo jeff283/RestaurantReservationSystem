@@ -12,7 +12,10 @@ namespace RestaurantReservationSystem.Models
         public DateTime CheckOut { get; set; }
         public bool isCancelled { get; set; } = false;
 
-        public ICollection<RestaurantTable> RestaurantTables { get; set;}
+        [Required]
+        public int RestaurantTableId { get; set; }
+        [ForeignKey("RestaurantTableId")]
+        public RestaurantTable RestaurantTable { get; set;}
 
         [Required]
         public string IdentityUserId { get; set; }

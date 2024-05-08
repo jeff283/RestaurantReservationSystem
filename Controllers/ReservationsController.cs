@@ -7,6 +7,8 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using RestaurantReservationSystem.Data;
 using RestaurantReservationSystem.Models;
+using Microsoft.AspNetCore.Identity;
+
 
 namespace RestaurantReservationSystem.Controllers
 {
@@ -49,6 +51,8 @@ namespace RestaurantReservationSystem.Controllers
         public IActionResult Create()
         {
             ViewData["IdentityUserId"] = new SelectList(_context.Users, "Id", "Id");
+            ViewData["RestaurantTableId"] = new SelectList(_context.RestaurantTables, "Id", "Id");
+
             return View();
         }
 
@@ -57,16 +61,29 @@ namespace RestaurantReservationSystem.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,CheckIn,CheckOut,isCancelled,IdentityUserId")] Reservation reservation)
+        public async Task<IActionResult> Create([Bind("Id,CheckIn,CheckOut,isCancelled,IdentityUserId, RestaurantTableId")] Reservation reservation)
         {
-            if (ModelState.IsValid)
+            ModelState.Clear();
+
+            reservation.RestaurantTable = _context.RestaurantTables.FirstOrDefault(r => r.Id == reservation.RestaurantTableId);
+            reservation.User = _context.Users.FirstOrDefault(u => u.Id == reservation.IdentityUserId);
+            //reservation.User = _context.IdentityUser.FirstOrDefault(u => u.Id == reservation.IdentityUserId);
+
+            if (!TryValidateModel(reservation, nameof(reservation)))
             {
+
+                ViewData["IdentityUserId"] = new SelectList(_context.Users, "Id", "Id", reservation.IdentityUserId);
+                ViewData["RestaurantTableId"] = new SelectList(_context.RestaurantTables, "Id", "Id");
+                return View(reservation);
+            }
+
+
+       
                 _context.Add(reservation);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
-            }
-            ViewData["IdentityUserId"] = new SelectList(_context.Users, "Id", "Id", reservation.IdentityUserId);
-            return View(reservation);
+            
+
         }
 
         // GET: Reservations/Edit/5

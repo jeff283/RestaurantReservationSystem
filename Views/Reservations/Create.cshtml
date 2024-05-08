@@ -13,6 +13,10 @@
         <form asp-action="Create">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="form-group">
+                <label asp-for="RestaurantTableId" class="control-label">Restaurant Table Id</label>
+                <select asp-for="RestaurantTableId" class="form-control" asp-items="ViewBag.RestaurantTableId"></select>
+            </div>
+            <div class="form-group">
                 <label asp-for="CheckIn" class="control-label"></label>
                 <input asp-for="CheckIn" class="form-control" />
                 <span asp-validation-for="CheckIn" class="text-danger"></span>
@@ -27,8 +31,14 @@
                     <input  class="form-check-input" asp-for="isCancelled" /> @Html.DisplayNameFor(model => model.isCancelled)
                 </label>
             </div>
+            <!--
             <div class="form-group">
-                <input type="hidden" asp-for="IdentityUserId" class ="form-control" asp-items="ViewBag.IdentityUserId"/>
+                <input class="form-control"  asp-for="IdentityUserId" class="form-control" asp-items="ViewBag.IdentityUserId" />
+            </div>
+            -->
+            <div class="form-group">
+                <label asp-for="IdentityUserId" class="control-label"></label>
+                <select asp-for="IdentityUserId" class="form-control" asp-items="ViewBag.IdentityUserId"></select>
             </div>
             <div class="form-group">
                 <input type="submit" value="Create" class="btn btn-primary" />
