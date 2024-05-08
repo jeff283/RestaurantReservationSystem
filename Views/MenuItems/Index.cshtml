@@ -1,0 +1,42 @@
+﻿@model IEnumerable<RestaurantReservationSystem.Models.MenuItem>
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<p>
+    <a class="btn btn-primary bg-red-custom" asp-action="Create" role="button">Create New</a>
+</p>
+
+      <div class="container">
+        <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3">
+        @foreach (var item in Model)
+        {
+          <div class="col">
+                <div class="card shadow-sm bg-main-custom">
+            <div>
+                <img src="@item.Image" alt="@item.Name" height="225" width="100%" class="card-img-top rounded-top">
+                <h4 class="card-title text-center py-2 bg-red-custom text-white rounded-bottom">@item.Name</h4>
+            </div>
+
+
+              <div class="card-body ">
+                 <p class="card-text text-center bg-white  rounded py-2">@item.Description</p>
+                        <p class="card-text text-center bg-red-custom text-white  rounded py-2 h4">$ @item.Price</p>
+
+                <div class="d-flex flex-row-reverse pt-2">
+                  <div class="btn-group">
+                    <a asp-action="Details" asp-route-id="@item.Id" role="button" class="btn btn-sm btn-outline-secondary">Details</a>
+                    <a asp-action="Edit" asp-route-id="@item.Id" role="button" class="btn btn-sm btn-outline-secondary">Edit</a>
+                    <a asp-action="Delete" asp-route-id="@item.Id" role="button" class="btn btn-sm btn-outline-secondary">Delete</a>
+                  </div>
+                  
+                </div>
+              </div>
+            </div>
+          </div>
+          }
+
+        </div>
+      </div>
+
