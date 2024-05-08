@@ -16,15 +16,18 @@ namespace RestaurantReservationSystem.Controllers
     {
         private readonly ApplicationDbContext _context;
 
-        public ReservationsController(ApplicationDbContext context)
+        private readonly UserManager<IdentityUser> _userManager;
+
+        public ReservationsController(ApplicationDbContext context, UserManager<IdentityUser> userManager)
         {
             _context = context;
+            _userManager = userManager;
         }
 
         // GET: Reservations
         public async Task<IActionResult> Index()
         {
-            var applicationDbContext = _context.Reservations.Include(r => r.User);
+            var applicationDbContext = _context.Reservations.Include(r => r.User).Include(t => t.RestaurantTable).Include(s => s.RestaurantTable.SeatingArea);
             return View(await applicationDbContext.ToListAsync());
         }
 
@@ -48,9 +51,17 @@ namespace RestaurantReservationSystem.Controllers
         }
 
         // GET: Reservations/Create
-        public IActionResult Create()
+        //public IActionResult Create()
+        public async Task<IActionResult> Create()
         {
-            ViewData["IdentityUserId"] = new SelectList(_context.Users, "Id", "Id");
+            var currentUser = await _userManager.GetUserAsync(User);
+            if (currentUser == null)
+            {
+                return NotFound();
+            }
+            ViewData["IdentityUserId"] = currentUser.Id;
+
+            //ViewData["IdentityUserId"] = new SelectList(_context.Users, "Id", "Id");
             ViewData["RestaurantTableId"] = new SelectList(_context.RestaurantTables, "Id", "Id");
 
             return View();
@@ -65,9 +76,11 @@ namespace RestaurantReservationSystem.Controllers
         {
             ModelState.Clear();
 
-            reservation.RestaurantTable = _context.RestaurantTables.FirstOrDefault(r => r.Id == reservation.RestaurantTableId);
-            reservation.User = _context.Users.FirstOrDefault(u => u.Id == reservation.IdentityUserId);
-            //reservation.User = _context.IdentityUser.FirstOrDefault(u => u.Id == reservation.IdentityUserId);
+            reservation.RestaurantTable = await _context.RestaurantTables.FirstOrDefaultAsync(r => r.Id == reservation.RestaurantTableId);
+            reservation.RestaurantTable.SeatingArea = await _context.SeatingAreas.FirstOrDefaultAsync(r => r.Id == reservation.RestaurantTable.SeatingAreaId);
+            reservation.User = await _userManager.FindByIdAsync(reservation.IdentityUserId);
+
+
 
             if (!TryValidateModel(reservation, nameof(reservation)))
             {
@@ -99,7 +112,9 @@ namespace RestaurantReservationSystem.Controllers
             {
                 return NotFound();
             }
-            ViewData["IdentityUserId"] = new SelectList(_context.Users, "Id", "Id", reservation.IdentityUserId);
+            ViewData["RestaurantTableId"] = new SelectList(_context.RestaurantTables, "Id", "Id");
+            ViewData["IdentityUserId"] = reservation.IdentityUserId;
+            //ViewData["IdentityUserId"] = new SelectList(_context.Users, "Id", "Id", reservation.IdentityUserId);
             return View(reservation);
         }
 
@@ -108,70 +123,81 @@ namespace RestaurantReservationSystem.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,CheckIn,CheckOut,isCancelled,IdentityUserId")] Reservation reservation)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,CheckIn,CheckOut,isCancelled,IdentityUserId, RestaurantTableId")] Reservation reservation)
         {
             if (id != reservation.Id)
             {
                 return NotFound();
             }
 
-            if (ModelState.IsValid)
+            ModelState.Clear();
+
+            reservation.RestaurantTable = await _context.RestaurantTables.FirstOrDefaultAsync(r => r.Id == reservation.RestaurantTableId);
+            reservation.RestaurantTable.SeatingArea = await _context.SeatingAreas.FirstOrDefaultAsync(r => r.Id == reservation.RestaurantTable.SeatingAreaId);
+            reservation.User = await _userManager.FindByIdAsync(reservation.IdentityUserId);
+
+            if (!TryValidateModel(reservation, nameof(reservation)))
             {
-                try
+
+                ViewData["IdentityUserId"] = new SelectList(_context.Users, "Id", "Id", reservation.IdentityUserId);
+                ViewData["RestaurantTableId"] = new SelectList(_context.RestaurantTables, "Id", "Id");
+                return View(reservation);
+            }
+
+     
+            try
+            {
+                _context.Update(reservation);
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                if (!ReservationExists(reservation.Id))
                 {
-                    _context.Update(reservation);
-                    await _context.SaveChangesAsync();
+                    return NotFound();
                 }
-                catch (DbUpdateConcurrencyException)
+                else
                 {
-                    if (!ReservationExists(reservation.Id))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
+                    throw;
                 }
-                return RedirectToAction(nameof(Index));
             }
-            ViewData["IdentityUserId"] = new SelectList(_context.Users, "Id", "Id", reservation.IdentityUserId);
-            return View(reservation);
-        }
-
-        // GET: Reservations/Delete/5
-        public async Task<IActionResult> Delete(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var reservation = await _context.Reservations
-                .Include(r => r.User)
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (reservation == null)
-            {
-                return NotFound();
-            }
-
-            return View(reservation);
-        }
-
-        // POST: Reservations/Delete/5
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
-        {
-            var reservation = await _context.Reservations.FindAsync(id);
-            if (reservation != null)
-            {
-                _context.Reservations.Remove(reservation);
-            }
-
-            await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
+
         }
+
+        //// GET: Reservations/Delete/5
+        //public async Task<IActionResult> Delete(int? id)
+        //{
+        //    if (id == null)
+        //    {
+        //        return NotFound();
+        //    }
+
+        //    var reservation = await _context.Reservations
+        //        .Include(r => r.User)
+        //        .FirstOrDefaultAsync(m => m.Id == id);
+        //    if (reservation == null)
+        //    {
+        //        return NotFound();
+        //    }
+
+        //    return View(reservation);
+        //}
+
+        //// POST: Reservations/Delete/5
+        //[HttpPost, ActionName("Delete")]
+        //[ValidateAntiForgeryToken]
+        //public async Task<IActionResult> DeleteConfirmed(int id)
+        //{
+        //    var reservation = await _context.Reservations.FindAsync(id);
+        //    if (reservation != null)
+        //    {
+        //        _context.Reservations.Remove(reservation);
+        //    }
+
+        //    await _context.SaveChangesAsync();
+        //    return RedirectToAction(nameof(Index));
+        //}
 
         private bool ReservationExists(int id)
         {

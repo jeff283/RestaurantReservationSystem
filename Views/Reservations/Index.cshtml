@@ -13,6 +13,12 @@
     <thead>
         <tr>
             <th>
+                @Html.DisplayNameFor(model => model.RestaurantTable.SeatingArea)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.RestaurantTable.Capacity)
+            </th>
+            <th>
                 @Html.DisplayNameFor(model => model.CheckIn)
             </th>
             <th>
@@ -24,12 +30,19 @@
             <th>
                 @Html.DisplayNameFor(model => model.User)
             </th>
+ 
             <th></th>
         </tr>
     </thead>
     <tbody>
 @foreach (var item in Model) {
         <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.RestaurantTable.SeatingArea.Name)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.RestaurantTable.Capacity)
+            </td>
             <td>
                 @Html.DisplayFor(modelItem => item.CheckIn)
             </td>
@@ -40,12 +53,14 @@
                 @Html.DisplayFor(modelItem => item.isCancelled)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.User.Id)
+                @Html.DisplayFor(modelItem => item.User.UserName)
             </td>
             <td>
                 <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
+                <a asp-action="Details" asp-route-id="@item.Id">Details</a> 
+                <!--
                 <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+                    -->
             </td>
         </tr>
 }

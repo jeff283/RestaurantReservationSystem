@@ -13,6 +13,10 @@
         <form asp-action="Edit">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <input type="hidden" asp-for="Id" />
+                        <div class="form-group">
+                <label asp-for="RestaurantTableId" class="control-label">Restaurant Table Id</label>
+                <select asp-for="RestaurantTableId" class="form-control" asp-items="ViewBag.RestaurantTableId"></select>
+            </div>
             <div class="form-group">
                 <label asp-for="CheckIn" class="control-label"></label>
                 <input asp-for="CheckIn" class="form-control" />
@@ -28,11 +32,19 @@
                     <input class="form-check-input" asp-for="isCancelled" /> @Html.DisplayNameFor(model => model.isCancelled)
                 </label>
             </div>
+            <!--
             <div class="form-group">
                 <label asp-for="IdentityUserId" class="control-label"></label>
                 <select asp-for="IdentityUserId" class="form-control" asp-items="ViewBag.IdentityUserId"></select>
                 <span asp-validation-for="IdentityUserId" class="text-danger"></span>
+                <label asp-for="IdentityUserId" class="control-label"></label>
+
             </div>
+            -->
+            <div class="form-group">
+                <input asp-for="IdentityUserId" class="form-control" type="hidden" value="@ViewBag.IdentityUserId" />
+            </div>
+
             <div class="form-group">
                 <input type="submit" value="Save" class="btn btn-primary" />
             </div>
