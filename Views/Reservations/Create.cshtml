@@ -24,12 +24,11 @@
             </div>
             <div class="form-group form-check">
                 <label class="form-check-label">
-                    <input class="form-check-input" asp-for="isCancelled" /> @Html.DisplayNameFor(model => model.isCancelled)
+                    <input  class="form-check-input" asp-for="isCancelled" /> @Html.DisplayNameFor(model => model.isCancelled)
                 </label>
             </div>
             <div class="form-group">
-                <label asp-for="IdentityUserId" class="control-label"></label>
-                <select asp-for="IdentityUserId" class ="form-control" asp-items="ViewBag.IdentityUserId"></select>
+                <input type="hidden" asp-for="IdentityUserId" class ="form-control" asp-items="ViewBag.IdentityUserId"/>
             </div>
             <div class="form-group">
                 <input type="submit" value="Create" class="btn btn-primary" />

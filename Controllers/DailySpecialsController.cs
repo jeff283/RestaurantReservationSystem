@@ -58,7 +58,7 @@ namespace RestaurantReservationSystem.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Id,Day,MenuId")] DailySpecial dailySpecial)
-        {
+        {          
             if (ModelState.IsValid)
             {
                 _context.Add(dailySpecial);

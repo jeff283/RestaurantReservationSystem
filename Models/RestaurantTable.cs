@@ -8,7 +8,7 @@ namespace RestaurantReservationSystem.Models
         [Key]
         public int Id { get; set; }
         public int Capacity { get; set; }
-        public bool isAvailable { get; set; }
+        public bool isAvailable { get; set; } = true;
         public Reservation? Reservation { get; set; }
 
         [Required]

@@ -10,7 +10,7 @@ namespace RestaurantReservationSystem.Models
         public int Id { get; set; }
         public DateTime CheckIn { get; set; }
         public DateTime CheckOut { get; set; }
-        public bool isCancelled { get; set; }
+        public bool isCancelled { get; set; } = false;
 
         public ICollection<RestaurantTable> RestaurantTables { get; set;}
 
