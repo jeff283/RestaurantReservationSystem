@@ -5,19 +5,32 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using NuGet.Protocol;
 using RestaurantReservationSystem.Data;
+using RestaurantReservationSystem.Interfaces;
 using RestaurantReservationSystem.Models;
 
 namespace RestaurantReservationSystem.Controllers
 {
     public class DailySpecialsController : Controller
     {
+        //private readonly IDailySpecialsService _dailySpecialsService;
         private readonly ApplicationDbContext _context;
+        //public DailySpecialsController(IDailySpecialsService dailySpecialsService)
 
         public DailySpecialsController(ApplicationDbContext context)
         {
+            //_dailySpecialsService = dailySpecialsService;
             _context = context;
         }
+
+
+        //// GET: DailySpecials
+        //public async Task<IActionResult> Index()
+        //{
+        //    var applicationDbContext = _dailySpecialsService.GetAll();
+        //    return View(await applicationDbContext.ToListAsync());
+        //}
 
         // GET: DailySpecials
         public async Task<IActionResult> Index()
@@ -33,6 +46,7 @@ namespace RestaurantReservationSystem.Controllers
             {
                 return NotFound();
             }
+            var idt = id;
 
             var dailySpecial = await _context.DailySpecials
                 .Include(d => d.MenuItem)
@@ -58,15 +72,20 @@ namespace RestaurantReservationSystem.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Id,Day,MenuId")] DailySpecial dailySpecial)
-        {          
-            if (ModelState.IsValid)
+        {
+            ModelState.Clear();
+            dailySpecial.MenuItem = _context.MenuItems.FirstOrDefault(m => m.Id == dailySpecial.MenuId);
+
+            if (!TryValidateModel(dailySpecial, nameof(dailySpecial)))
             {
+                ViewData["MenuId"] = new SelectList(_context.MenuItems, "Id", "Id", dailySpecial.MenuId);
+                return View(dailySpecial);
+            }
+
                 _context.Add(dailySpecial);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
-            }
-            ViewData["MenuId"] = new SelectList(_context.MenuItems, "Id", "Id", dailySpecial.MenuId);
-            return View(dailySpecial);
+       
         }
 
         // GET: DailySpecials/Edit/5
@@ -98,28 +117,34 @@ namespace RestaurantReservationSystem.Controllers
                 return NotFound();
             }
 
-            if (ModelState.IsValid)
+
+
+            ModelState.Clear();
+            dailySpecial.MenuItem = _context.MenuItems.FirstOrDefault(m => m.Id == dailySpecial.MenuId);
+
+            if (!TryValidateModel(dailySpecial, nameof(dailySpecial)))
             {
-                try
-                {
-                    _context.Update(dailySpecial);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!DailySpecialExists(dailySpecial.Id))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
-                return RedirectToAction(nameof(Index));
+                ViewData["MenuId"] = new SelectList(_context.MenuItems, "Id", "Id", dailySpecial.MenuId);
+                return View(dailySpecial);
             }
-            ViewData["MenuId"] = new SelectList(_context.MenuItems, "Id", "Id", dailySpecial.MenuId);
-            return View(dailySpecial);
+
+            try
+            {
+                _context.Update(dailySpecial);
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                if (!DailySpecialExists(dailySpecial.Id))
+                {
+                    return NotFound();
+                }
+                else
+                {
+                    throw;
+                }
+            }
+            return RedirectToAction(nameof(Index));
         }
 
         // GET: DailySpecials/Delete/5

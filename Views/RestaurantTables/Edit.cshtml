@@ -24,6 +24,10 @@
                 </label>
             </div>
             <div class="form-group">
+                <label asp-for="SeatingAreaId" class="control-label">Seating Area ID</label>
+                <select asp-for="SeatingAreaId" class="form-control" asp-items="ViewBag.SeatingAreaId"></select>
+            </div>
+            <div class="form-group">
                 <input type="submit" value="Save" class="btn btn-primary" />
             </div>
         </form>

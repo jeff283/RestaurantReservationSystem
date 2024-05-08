@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using NuGet.Protocol;
 using RestaurantReservationSystem.Data;
 using RestaurantReservationSystem.Models;
 
@@ -56,6 +57,7 @@ namespace RestaurantReservationSystem.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Id,Name,Price,Image,Description,Category")] MenuItem menuItem)
         {
+            await Console.Out.WriteLineAsync("MENU ITEM:" + menuItem.Id.ToString() + " " + menuItem.Name + " " + menuItem.Price.ToString() + " " +menuItem.Description + " " );
             if (ModelState.IsValid)
             {
                 _context.Add(menuItem);

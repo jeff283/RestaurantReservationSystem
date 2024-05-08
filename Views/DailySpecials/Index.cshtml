@@ -4,38 +4,47 @@
     ViewData["Title"] = "Index";
 }
 
-<h1>Index</h1>
+<h2>Daily Special Menu</h2>
+
 
 <p>
-    <a asp-action="Create">Create New</a>
+    <a class="btn btn-primary bg-red-custom" asp-action="Create" role="button">Create New</a>
 </p>
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.Day)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.MenuItem)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.Day)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.MenuItem.Id)
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
-            </td>
-        </tr>
-}
-    </tbody>
-</table>
+
+<div class="container">
+    <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3">
+        @foreach (var item in Model)
+        {
+            <div class="col">
+                <div class="card shadow-sm bg-main-custom">
+                    <div>
+                        <img src="@item.MenuItem.Image" alt="@item.MenuItem.Name" height="225" width="100%" class="card-img-top rounded-top">
+                        <h4 class="card-title text-center py-2 bg-red-custom text-white rounded-bottom">@item.MenuItem.Name</h4>
+                    </div>
+
+
+                    <div class="card-body ">
+                        <p class="card-text text-center bg-white  rounded py-2">@item.MenuItem.Description</p>
+                        <p class="card-text text-center bg-red-custom text-white  rounded py-2 h4">$ @item.MenuItem.Price</p>
+
+                        <div class="d-flex justify-content-between align-items-center pt-2">
+                            <small class="text-body-secondary h6">@item.Day</small>
+
+                            <div class="btn-group">
+                                <a asp-action="Details" asp-route-id="@item.Id" role="button" class="btn btn-sm btn-outline-secondary">Details</a>
+                                <a asp-action="Edit" asp-route-id="@item.Id" role="button" class="btn btn-sm btn-outline-secondary">Edit</a>
+                                <a asp-action="Delete" asp-route-id="@item.Id" role="button" class="btn btn-sm btn-outline-secondary">Delete</a>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+        @if(!Model.Any())
+        {
+            <h3>No Special Menus Available</h3>
+        }
+
+    </div>
+</div>

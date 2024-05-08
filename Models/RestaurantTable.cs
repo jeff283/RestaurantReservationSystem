@@ -11,7 +11,11 @@ namespace RestaurantReservationSystem.Models
         public bool isAvailable { get; set; } = true;
         public Reservation? Reservation { get; set; }
 
+
         [Required]
+        public int SeatingAreaId { get; set; }
+
+        [ForeignKey("SeatingAreaId")]
         public SeatingArea SeatingArea { get; set; }
 
         public RestaurantTable()

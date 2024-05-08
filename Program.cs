@@ -1,6 +1,8 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using RestaurantReservationSystem.Data;
+using RestaurantReservationSystem.Interfaces;
+using RestaurantReservationSystem.Services;
 
 namespace RestaurantReservationSystem
 {
@@ -16,9 +18,13 @@ namespace RestaurantReservationSystem
                 options.UseSqlServer(connectionString));
             builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
-            builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
+            builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = false)
                 .AddEntityFrameworkStores<ApplicationDbContext>();
             builder.Services.AddControllersWithViews();
+
+            //My Services
+            //builder.Services.AddScoped<IDailySpecialsService, DailySpecialsService>();
+
 
             var app = builder.Build();
 

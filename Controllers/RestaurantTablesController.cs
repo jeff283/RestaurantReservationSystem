@@ -34,6 +34,7 @@ namespace RestaurantReservationSystem.Controllers
             }
 
             var restaurantTable = await _context.RestaurantTables
+                .Include(d => d.SeatingArea)
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (restaurantTable == null)
             {
@@ -44,9 +45,29 @@ namespace RestaurantReservationSystem.Controllers
         }
 
         // GET: RestaurantTables/Create
+        //public IActionResult Create()
+        //{
+        //    ViewData["SeatingAreaId"] = new SelectList(_context.SeatingAreas, "Id", "Id");
+        //    return View();
+        //}
         public IActionResult Create()
         {
+            // Retrieve the seating areas from the database
+            var seatingAreas = _context.SeatingAreas.ToList();
+
+            // Create a list of SelectListItem objects with desired label and value pairs
+            List<SelectListItem> seatingAreaList = seatingAreas.Select(area => new SelectListItem
+            {
+                Text = area.Name,  // Assuming AreaName is the property you want as the label
+                Value = area.Id.ToString()  // Assuming Id is the property you want as the value
+            }).ToList();
+
+            // Set ViewBag.SeatingAreaId to the list of SelectListItem objects
+            ViewBag.SeatingAreaId = seatingAreaList;
+
             return View();
+
+
         }
 
         // POST: RestaurantTables/Create
@@ -54,15 +75,34 @@ namespace RestaurantReservationSystem.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Capacity,isAvailable")] RestaurantTable restaurantTable)
+        public async Task<IActionResult> Create([Bind("Id,Capacity,isAvailable, SeatingAreaId")] RestaurantTable restaurantTable)
         {
-            if (ModelState.IsValid)
+            ModelState.Clear();
+
+
+            restaurantTable.SeatingArea = _context.SeatingAreas.FirstOrDefault(m => m.Id == restaurantTable.SeatingAreaId);
+
+            if (!TryValidateModel(restaurantTable, nameof(restaurantTable)))
             {
-                _context.Add(restaurantTable);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+                // Retrieve the seating areas from the database
+                var seatingAreas = _context.SeatingAreas.ToList();
+
+                // Create a list of SelectListItem objects with desired label and value pairs
+                List<SelectListItem> seatingAreaList = seatingAreas.Select(area => new SelectListItem
+                {
+                    Text = area.Name,  // Assuming AreaName is the property you want as the label
+                    Value = area.Id.ToString()  // Assuming Id is the property you want as the value
+                }).ToList();
+
+                // Set ViewBag.SeatingAreaId to the list of SelectListItem objects
+                ViewBag.SeatingAreaId = seatingAreaList;
+                return View(restaurantTable);
             }
-            return View(restaurantTable);
+
+            _context.Add(restaurantTable);
+            await _context.SaveChangesAsync();
+            return RedirectToAction(nameof(Index));
+
         }
 
         // GET: RestaurantTables/Edit/5
@@ -78,7 +118,20 @@ namespace RestaurantReservationSystem.Controllers
             {
                 return NotFound();
             }
+
+            var seatingAreas = _context.SeatingAreas.ToList();
+
+            // Create a list of SelectListItem objects with desired label and value pairs
+            List<SelectListItem> seatingAreaList = seatingAreas.Select(area => new SelectListItem
+            {
+                Text = area.Name,  // Assuming AreaName is the property you want as the label
+                Value = area.Id.ToString()  // Assuming Id is the property you want as the value
+            }).ToList();
+
+            // Set ViewBag.SeatingAreaId to the list of SelectListItem objects
+            ViewBag.SeatingAreaId = seatingAreaList;
             return View(restaurantTable);
+
         }
 
         // POST: RestaurantTables/Edit/5
@@ -86,34 +139,51 @@ namespace RestaurantReservationSystem.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Capacity,isAvailable")] RestaurantTable restaurantTable)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,Capacity,isAvailable, SeatingAreaId")] RestaurantTable restaurantTable)
         {
             if (id != restaurantTable.Id)
             {
                 return NotFound();
             }
 
-            if (ModelState.IsValid)
+
+            ModelState.Clear();
+            restaurantTable.SeatingArea = _context.SeatingAreas.FirstOrDefault(m => m.Id == restaurantTable.SeatingAreaId);
+
+            if (!TryValidateModel(restaurantTable, nameof(restaurantTable)))
             {
-                try
+                // Retrieve the seating areas from the database
+                var seatingAreas = _context.SeatingAreas.ToList();
+
+                // Create a list of SelectListItem objects with desired label and value pairs
+                List<SelectListItem> seatingAreaList = seatingAreas.Select(area => new SelectListItem
                 {
-                    _context.Update(restaurantTable);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!RestaurantTableExists(restaurantTable.Id))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
-                return RedirectToAction(nameof(Index));
+                    Text = area.Name,  // Assuming AreaName is the property you want as the label
+                    Value = area.Id.ToString()  // Assuming Id is the property you want as the value
+                }).ToList();
+
+                // Set ViewBag.SeatingAreaId to the list of SelectListItem objects
+                ViewBag.SeatingAreaId = seatingAreaList;
+                return View(restaurantTable);
             }
-            return View(restaurantTable);
+
+            try
+            {
+                _context.Update(restaurantTable);
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                if (!RestaurantTableExists(restaurantTable.Id))
+                {
+                    return NotFound();
+                }
+                else
+                {
+                    throw;
+                }
+            }
+            return RedirectToAction(nameof(Index));
         }
 
         // GET: RestaurantTables/Delete/5
