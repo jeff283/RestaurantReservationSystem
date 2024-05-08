@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -11,6 +12,7 @@ using RestaurantReservationSystem.Models;
 
 namespace RestaurantReservationSystem.Controllers
 {
+    [Authorize(Roles = "Staff")]
     public class MenuItemsController : Controller
     {
         private readonly ApplicationDbContext _context;
@@ -21,6 +23,7 @@ namespace RestaurantReservationSystem.Controllers
         }
 
         // GET: MenuItems
+        [AllowAnonymous]
         public async Task<IActionResult> Index()
         {
             return View(await _context.MenuItems.Where(t => t.DailySpecial == null).ToListAsync());

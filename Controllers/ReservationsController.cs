@@ -8,10 +8,12 @@ using Microsoft.EntityFrameworkCore;
 using RestaurantReservationSystem.Data;
 using RestaurantReservationSystem.Models;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Authorization;
 
 
 namespace RestaurantReservationSystem.Controllers
 {
+    [Authorize]
     public class ReservationsController : Controller
     {
         private readonly ApplicationDbContext _context;
@@ -27,8 +29,28 @@ namespace RestaurantReservationSystem.Controllers
         // GET: Reservations
         public async Task<IActionResult> Index()
         {
-            var applicationDbContext = _context.Reservations.Include(r => r.User).Include(t => t.RestaurantTable).Include(s => s.RestaurantTable.SeatingArea);
-            return View(await applicationDbContext.ToListAsync());
+            var currentUser = await _userManager.GetUserAsync(User);
+            if (currentUser == null)
+            {
+                return NotFound();
+            }
+
+
+            if (!User.IsInRole("Staff"))
+            {
+                var applicationDbContext = _context.Reservations
+                .Where(u => u.IdentityUserId == currentUser.Id)
+                .Include(r => r.User).Include(t => t.RestaurantTable)
+                .Include(s => s.RestaurantTable.SeatingArea);
+                return View(await applicationDbContext.ToListAsync());
+
+            }
+
+            var applicationDbContextStaff = _context.Reservations
+            .Include(r => r.User).Include(t => t.RestaurantTable)
+            .Include(s => s.RestaurantTable.SeatingArea);
+
+            return View(await applicationDbContextStaff.ToListAsync());
         }
 
         // GET: Reservations/Details/5

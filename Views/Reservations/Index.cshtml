@@ -1,5 +1,11 @@
 ﻿@model IEnumerable<RestaurantReservationSystem.Models.Reservation>
 
+@using Microsoft.AspNetCore.Identity
+
+@inject SignInManager<IdentityUser> SignInManager
+@inject UserManager<IdentityUser> UserManager
+
+
 @{
     ViewData["Title"] = "Index";
 }
@@ -27,9 +33,13 @@
             <th>
                 @Html.DisplayNameFor(model => model.isCancelled)
             </th>
+            @if (User.IsInRole("Staff"))
+            {
+                
             <th>
                 @Html.DisplayNameFor(model => model.User)
             </th>
+            }
  
             <th></th>
         </tr>
@@ -52,9 +62,13 @@
             <td>
                 @Html.DisplayFor(modelItem => item.isCancelled)
             </td>
-            <td>
+                @if (User.IsInRole("Staff"))
+                {
+                    
+                <td>
                 @Html.DisplayFor(modelItem => item.User.UserName)
             </td>
+                }
             <td>
                 <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
                 <a asp-action="Details" asp-route-id="@item.Id">Details</a> 

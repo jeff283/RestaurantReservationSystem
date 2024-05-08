@@ -2,16 +2,17 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using NuGet.Protocol;
 using RestaurantReservationSystem.Data;
-using RestaurantReservationSystem.Interfaces;
 using RestaurantReservationSystem.Models;
 
 namespace RestaurantReservationSystem.Controllers
 {
+    [Authorize(Roles = "Staff")]
     public class DailySpecialsController : Controller
     {
         //private readonly IDailySpecialsService _dailySpecialsService;
@@ -33,6 +34,7 @@ namespace RestaurantReservationSystem.Controllers
         //}
 
         // GET: DailySpecials
+        [AllowAnonymous]
         public async Task<IActionResult> Index()
         {
             var applicationDbContext = _context.DailySpecials.Include(d => d.MenuItem);
@@ -74,7 +76,7 @@ namespace RestaurantReservationSystem.Controllers
         public async Task<IActionResult> Create([Bind("Id,Day,MenuId")] DailySpecial dailySpecial)
         {
             ModelState.Clear();
-            dailySpecial.MenuItem = _context.MenuItems.FirstOrDefault(m => m.Id == dailySpecial.MenuId);
+            dailySpecial.MenuItem = await _context.MenuItems.FirstOrDefaultAsync(m => m.Id == dailySpecial.MenuId);
 
             if (!TryValidateModel(dailySpecial, nameof(dailySpecial)))
             {
@@ -120,7 +122,7 @@ namespace RestaurantReservationSystem.Controllers
 
 
             ModelState.Clear();
-            dailySpecial.MenuItem = _context.MenuItems.FirstOrDefault(m => m.Id == dailySpecial.MenuId);
+            dailySpecial.MenuItem = await _context.MenuItems.FirstOrDefaultAsync(m => m.Id == dailySpecial.MenuId);
 
             if (!TryValidateModel(dailySpecial, nameof(dailySpecial)))
             {

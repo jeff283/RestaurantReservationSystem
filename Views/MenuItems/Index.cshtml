@@ -1,4 +1,8 @@
 ﻿@model IEnumerable<RestaurantReservationSystem.Models.MenuItem>
+@using Microsoft.AspNetCore.Identity
+
+@inject SignInManager<IdentityUser> SignInManager
+@inject UserManager<IdentityUser> UserManager
 
 @{
     ViewData["Title"] = "Index";
@@ -6,9 +10,15 @@
 
 <h2>Menu</h2>
 
-<p>
-    <a class="btn btn-primary bg-red-custom" asp-action="Create" role="button">Create New</a>
-</p>
+
+
+@if (User.IsInRole("Staff")){
+    <p>
+        <a class="btn btn-primary bg-red-custom" asp-action="Create" role="button">Create New</a>
+    </p>
+}
+
+
 
       <div class="container">
         <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3">
@@ -26,14 +36,19 @@
                  <p class="card-text text-center bg-white  rounded py-2">@item.Description</p>
                         <p class="card-text text-center bg-red-custom text-white  rounded py-2 h4">$ @item.Price</p>
 
-                <div class="d-flex flex-row-reverse pt-2">
-                  <div class="btn-group">
-                    <a asp-action="Details" asp-route-id="@item.Id" role="button" class="btn btn-sm btn-outline-secondary">Details</a>
-                    <a asp-action="Edit" asp-route-id="@item.Id" role="button" class="btn btn-sm btn-outline-secondary">Edit</a>
-                    <a asp-action="Delete" asp-route-id="@item.Id" role="button" class="btn btn-sm btn-outline-secondary">Delete</a>
-                  </div>
-                  
-                </div>
+                        @if (User.IsInRole("Staff"))
+                        {
+                            <div class="d-flex flex-row-reverse pt-2">
+                                <div class="btn-group">
+                                    <a asp-action="Details" asp-route-id="@item.Id" role="button" class="btn btn-sm btn-outline-secondary">Details</a>
+                                    <a asp-action="Edit" asp-route-id="@item.Id" role="button" class="btn btn-sm btn-outline-secondary">Edit</a>
+                                    <a asp-action="Delete" asp-route-id="@item.Id" role="button" class="btn btn-sm btn-outline-secondary">Delete</a>
+                                </div>
+                            </div>
+                        }
+
+
+                
               </div>
             </div>
           </div>

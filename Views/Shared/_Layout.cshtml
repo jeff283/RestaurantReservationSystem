@@ -1,4 +1,10 @@
-﻿<!DOCTYPE html>
+﻿@using Microsoft.AspNetCore.Identity
+
+@inject SignInManager<IdentityUser> SignInManager
+@inject UserManager<IdentityUser> UserManager
+
+
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
@@ -28,12 +34,18 @@
                         <li class="nav-item">
                             <a class="nav-link text-white" asp-area="" asp-controller="Reservations" asp-action="Index">Reservations</a>
                         </li>
+                        @if (User.IsInRole("Staff"))
+                        {
+                            
                         <li class="nav-item">
                             <a class="nav-link text-white" asp-area="" asp-controller="RestaurantTables" asp-action="Index">Restaurant Tables</a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link text-white" asp-area="" asp-controller="SeatingAreas" asp-action="Index">Seating Areas</a>
                         </li>
+
+                        }
+
                     </ul>
                     <partial name="_LoginPartial" />
                 </div>
