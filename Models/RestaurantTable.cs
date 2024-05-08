@@ -9,7 +9,9 @@ namespace RestaurantReservationSystem.Models
         public int Id { get; set; }
         public int Capacity { get; set; }
         public bool isAvailable { get; set; } = true;
-        public Reservation? Reservation { get; set; }
+
+
+        public ICollection<Reservation>? Reservation { get; set; }
 
 
         [Required]

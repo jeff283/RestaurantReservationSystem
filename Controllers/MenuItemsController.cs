@@ -23,7 +23,7 @@ namespace RestaurantReservationSystem.Controllers
         // GET: MenuItems
         public async Task<IActionResult> Index()
         {
-            return View(await _context.MenuItems.ToListAsync());
+            return View(await _context.MenuItems.Where(t => t.DailySpecial == null).ToListAsync());
         }
 
         // GET: MenuItems/Details/5

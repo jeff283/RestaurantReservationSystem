@@ -61,8 +61,17 @@ namespace RestaurantReservationSystem.Controllers
             }
             ViewData["IdentityUserId"] = currentUser.Id;
 
-            //ViewData["IdentityUserId"] = new SelectList(_context.Users, "Id", "Id");
-            ViewData["RestaurantTableId"] = new SelectList(_context.RestaurantTables, "Id", "Id");
+            var availableTables = _context.RestaurantTables.Where(t => t.isAvailable == true).Include(s => s.SeatingArea).ToList();
+
+            List<SelectListItem> availableTablesList = availableTables.Select(table => new SelectListItem
+            {
+                Text =  table.SeatingArea.Name + " - " + table.Capacity.ToString(),
+                Value = table.Id.ToString(),
+            }).ToList();
+
+            ViewData["RestaurantTableId"] = availableTablesList;
+            //ViewData["RestaurantTableId"] = new SelectList(_context.RestaurantTables, "Id", "Id");
+
 
             return View();
         }

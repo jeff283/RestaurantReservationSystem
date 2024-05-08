@@ -22,7 +22,8 @@ namespace RestaurantReservationSystem.Controllers
         // GET: RestaurantTables
         public async Task<IActionResult> Index()
         {
-            return View(await _context.RestaurantTables.ToListAsync());
+            var applicationDbContext = _context.RestaurantTables.Include(s => s.SeatingArea);
+            return View(await applicationDbContext.ToListAsync());
         }
 
         // GET: RestaurantTables/Details/5
