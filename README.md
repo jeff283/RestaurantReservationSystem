@@ -58,3 +58,6 @@
 
 **Seating Areas Page**
 ![Seating Areas Pages](ExtImages/SeatingAreas.png)
+
+**ERD**
+![ERD](ExtImages/RestaurantReservationSystem.drawio.dark.svg)
