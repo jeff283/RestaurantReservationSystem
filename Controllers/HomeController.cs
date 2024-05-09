@@ -15,7 +15,10 @@ namespace RestaurantReservationSystem.Controllers
 
         public IActionResult Index()
         {
-            return View();
+            //return View();
+            //return RedirectToAction("/");
+            return Redirect("MenuItems/Index");
+
         }
 
         public IActionResult Privacy()

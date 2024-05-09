@@ -79,6 +79,14 @@ namespace RestaurantReservationSystem.Areas.Identity.Pages.Account
             [Display(Name = "Email")]
             public string Email { get; set; }
 
+            //User Role
+            [Required]
+            //[StringLength(100, ErrorMessage ="A User Role Must Be Selected")]
+            [DataType(DataType.Text)]
+            [Display(Name = "Role")]
+            public string Role { get; set; }
+
+
             /// <summary>
             ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
             ///     directly from your code. This API may change or be removed in future releases.
@@ -117,10 +125,21 @@ namespace RestaurantReservationSystem.Areas.Identity.Pages.Account
                 await _userStore.SetUserNameAsync(user, Input.Email, CancellationToken.None);
                 await _emailStore.SetEmailAsync(user, Input.Email, CancellationToken.None);
                 var result = await _userManager.CreateAsync(user, Input.Password);
+                //await _userManager.AddToRoleAsync(user, Input.Role);
 
                 if (result.Succeeded)
                 {
                     _logger.LogInformation("User created a new account with password.");
+
+                    try
+                    {
+                        var userNewRole = await _userManager.AddToRoleAsync(user, Input.Role);
+                    }
+                    catch (Exception ex)
+                    {
+                        _logger.LogError(ex, "Failed to add user to role");
+                        throw; // Rethrow the exception to display the error message
+                    }
 
                     var userId = await _userManager.GetUserIdAsync(user);
                     var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
