@@ -77,6 +77,7 @@ namespace RestaurantReservationSystem.Controllers
         public async Task<IActionResult> Create()
         {
             var currentUser = await _userManager.GetUserAsync(User);
+
             if (currentUser == null)
             {
                 return NotFound();
@@ -118,14 +119,16 @@ namespace RestaurantReservationSystem.Controllers
 
                 ViewData["IdentityUserId"] = new SelectList(_context.Users, "Id", "Id", reservation.IdentityUserId);
                 ViewData["RestaurantTableId"] = new SelectList(_context.RestaurantTables, "Id", "Id");
+                TempData["status"] = " Reservation Failed";
                 return View(reservation);
             }
 
 
        
-                _context.Add(reservation);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+            _context.Add(reservation);
+            await _context.SaveChangesAsync();
+            TempData["status"] = reservation.RestaurantTable.SeatingArea.Name.ToString() + " - " + reservation.RestaurantTable.Capacity.ToString() + " Reserved Successfully";
+            return RedirectToAction(nameof(Index));
             
 
         }
@@ -143,9 +146,19 @@ namespace RestaurantReservationSystem.Controllers
             {
                 return NotFound();
             }
-            ViewData["RestaurantTableId"] = new SelectList(_context.RestaurantTables, "Id", "Id");
             ViewData["IdentityUserId"] = reservation.IdentityUserId;
-            //ViewData["IdentityUserId"] = new SelectList(_context.Users, "Id", "Id", reservation.IdentityUserId);
+            //ViewData["RestaurantTableId"] = new SelectList(_context.RestaurantTables, "Id", "Id");
+
+            var availableTables = _context.RestaurantTables.Where(t => t.isAvailable == true).Include(s => s.SeatingArea).ToList();
+
+            List<SelectListItem> availableTablesList = availableTables.Select(table => new SelectListItem
+            {
+                Text = table.SeatingArea.Name + " - " + table.Capacity.ToString(),
+                Value = table.Id.ToString(),
+            }).ToList();
+
+            ViewData["RestaurantTableId"] = availableTablesList;
+
             return View(reservation);
         }
 
@@ -172,6 +185,7 @@ namespace RestaurantReservationSystem.Controllers
 
                 ViewData["IdentityUserId"] = new SelectList(_context.Users, "Id", "Id", reservation.IdentityUserId);
                 ViewData["RestaurantTableId"] = new SelectList(_context.RestaurantTables, "Id", "Id");
+                TempData["status"] = " Reservation Edit Failed";
                 return View(reservation);
             }
 
@@ -180,6 +194,7 @@ namespace RestaurantReservationSystem.Controllers
             {
                 _context.Update(reservation);
                 await _context.SaveChangesAsync();
+                TempData["status"] = reservation.RestaurantTable.SeatingArea.Name.ToString() + " - " + reservation.RestaurantTable.Capacity.ToString() + "Reservation Edited Successfully";
             }
             catch (DbUpdateConcurrencyException)
             {
@@ -195,6 +210,83 @@ namespace RestaurantReservationSystem.Controllers
             return RedirectToAction(nameof(Index));
 
         }
+
+
+        // GET: Reservations/Report
+        [Authorize(Roles = "Staff")]
+        public async Task<IActionResult> Report()
+        {
+         
+            var reservations = await _context.Reservations
+                .Include(u => u.User)
+                .Include(t => t.RestaurantTable)
+                .Include(s => s.RestaurantTable.SeatingArea)
+                .ToListAsync();
+
+            // Group reservations by day of the week and count the number of reservations for each day
+            var bookingFrequency = reservations
+                .GroupBy(r => r.CheckIn.DayOfWeek)
+                .Select(g => new
+                {
+                    DayOfWeek = g.Key,
+                    Frequency = g.Count()
+                })
+                .OrderBy(g => g.DayOfWeek)
+                .ToList();
+
+            ViewData["BookingFrequency"] = bookingFrequency;
+
+
+            // Group reservations by hour of the day and count the number of reservations for each hour
+            var bookingFrequencyByHour = reservations
+                .GroupBy(r => r.CheckIn.Hour)
+                .Select(g => new
+                {
+                    HourOfDay = g.Key,
+                    Frequency = g.Count()
+                })
+                .OrderBy(g => g.HourOfDay)
+                .ToList();
+
+            ViewData["BookingFrequencyByHour"] = bookingFrequencyByHour;
+
+            return View(reservations);
+        }
+
+
+        //// POST: Reservations/Report
+        //// To protect from overposting attacks, enable the specific properties you want to bind to.
+        //// For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        //[HttpPost]
+        //[ValidateAntiForgeryToken]
+        //public async Task<IActionResult> Report([Bind("Id,CheckIn,CheckOut,isCancelled,IdentityUserId, RestaurantTableId")] Reservation reservation)
+        //{
+        //    ModelState.Clear();
+
+        //    reservation.RestaurantTable = await _context.RestaurantTables.FirstOrDefaultAsync(r => r.Id == reservation.RestaurantTableId);
+        //    reservation.RestaurantTable.SeatingArea = await _context.SeatingAreas.FirstOrDefaultAsync(r => r.Id == reservation.RestaurantTable.SeatingAreaId);
+        //    reservation.User = await _userManager.FindByIdAsync(reservation.IdentityUserId);
+
+
+
+        //    if (!TryValidateModel(reservation, nameof(reservation)))
+        //    {
+
+        //        ViewData["IdentityUserId"] = new SelectList(_context.Users, "Id", "Id", reservation.IdentityUserId);
+        //        ViewData["RestaurantTableId"] = new SelectList(_context.RestaurantTables, "Id", "Id");
+        //        TempData["status"] = " Reservation Failed";
+        //        return View(reservation);
+        //    }
+
+
+
+        //    _context.Add(reservation);
+        //    await _context.SaveChangesAsync();
+        //    TempData["status"] = reservation.RestaurantTable.SeatingArea.Name.ToString() + " - " + reservation.RestaurantTable.Capacity.ToString() + " Reserved Successfully";
+        //    return RedirectToAction(nameof(Index));
+
+
+        //}
 
         //// GET: Reservations/Delete/5
         //public async Task<IActionResult> Delete(int? id)

@@ -1,0 +1,62 @@
+﻿@model IEnumerable<RestaurantReservationSystem.Models.Reservation>
+
+@using Microsoft.AspNetCore.Identity
+
+@inject SignInManager<IdentityUser> SignInManager
+@inject UserManager<IdentityUser> UserManager
+
+
+@{
+    ViewData["Title"] = "Report";
+}
+
+
+
+
+
+<h1>Reports</h1>
+
+
+
+<h3>Booking Frequency by Day of the Week</h3>
+<table class="table">
+    <thead>
+        <tr>
+            <th>Day of the Week</th>
+            <th>Booking Frequency</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in (IEnumerable<dynamic>)ViewData["BookingFrequency"])
+        {
+            <tr>
+                <td>@item.DayOfWeek</td>
+                <td>@item.Frequency</td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<h3>Booking Frequency By Hour</h3>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Hour of the Day</th>
+            <th>Frequency</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in (IEnumerable<dynamic>)ViewData["BookingFrequencyByHour"])
+        {
+            <tr>
+                <td>@item.HourOfDay</td>
+                <td>@item.Frequency</td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<div>
+    <a asp-action="Index">Back to Reservations</a>
+</div>

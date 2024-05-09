@@ -13,10 +13,12 @@
         <form asp-action="Edit">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <input type="hidden" asp-for="Id" />
-                        <div class="form-group">
+
+            <div class="form-group">
                 <label asp-for="RestaurantTableId" class="control-label">Restaurant Table Id</label>
                 <select asp-for="RestaurantTableId" class="form-control" asp-items="ViewBag.RestaurantTableId"></select>
             </div>
+
             <div class="form-group">
                 <label asp-for="CheckIn" class="control-label"></label>
                 <input asp-for="CheckIn" class="form-control" />

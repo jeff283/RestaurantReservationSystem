@@ -13,17 +13,34 @@
 <script src="~/lib/jquery/dist/jquery.min.js"></script>
 <script src="//cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
 
+@if (TempData["status"] != null)
+{
+    <script type="text/javascript">
+        toastr.success("@TempData["status"]");
+    </script>
+    
+}
 
-<script type="text/javascript">
-    toastr.success('Have fun storming the castle!', 'Miracle Max Says');
-</script>
+ 
 
 
 <h1>Reservations</h1>
 
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
+<div class="d-flex justify-content-between align-items-center">
+    <p>
+        <a asp-action="Create">Create New</a>
+    </p>
+    @if (User.IsInRole("Staff"))
+    {
+    <p>
+        <a asp-action="Report">Generate Report</a>
+    </p>
+        
+    }
+
+</div>
+
+
 <table class="table">
     <thead>
         <tr>
