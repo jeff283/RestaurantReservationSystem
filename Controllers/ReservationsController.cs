@@ -254,39 +254,7 @@ namespace RestaurantReservationSystem.Controllers
         }
 
 
-        //// POST: Reservations/Report
-        //// To protect from overposting attacks, enable the specific properties you want to bind to.
-        //// For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        //[HttpPost]
-        //[ValidateAntiForgeryToken]
-        //public async Task<IActionResult> Report([Bind("Id,CheckIn,CheckOut,isCancelled,IdentityUserId, RestaurantTableId")] Reservation reservation)
-        //{
-        //    ModelState.Clear();
-
-        //    reservation.RestaurantTable = await _context.RestaurantTables.FirstOrDefaultAsync(r => r.Id == reservation.RestaurantTableId);
-        //    reservation.RestaurantTable.SeatingArea = await _context.SeatingAreas.FirstOrDefaultAsync(r => r.Id == reservation.RestaurantTable.SeatingAreaId);
-        //    reservation.User = await _userManager.FindByIdAsync(reservation.IdentityUserId);
-
-
-
-        //    if (!TryValidateModel(reservation, nameof(reservation)))
-        //    {
-
-        //        ViewData["IdentityUserId"] = new SelectList(_context.Users, "Id", "Id", reservation.IdentityUserId);
-        //        ViewData["RestaurantTableId"] = new SelectList(_context.RestaurantTables, "Id", "Id");
-        //        TempData["status"] = " Reservation Failed";
-        //        return View(reservation);
-        //    }
-
-
-
-        //    _context.Add(reservation);
-        //    await _context.SaveChangesAsync();
-        //    TempData["status"] = reservation.RestaurantTable.SeatingArea.Name.ToString() + " - " + reservation.RestaurantTable.Capacity.ToString() + " Reserved Successfully";
-        //    return RedirectToAction(nameof(Index));
-
-
-        //}
+        
 
         //// GET: Reservations/Delete/5
         //public async Task<IActionResult> Delete(int? id)

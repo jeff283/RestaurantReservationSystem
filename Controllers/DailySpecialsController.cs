@@ -64,7 +64,17 @@ namespace RestaurantReservationSystem.Controllers
         // GET: DailySpecials/Create
         public IActionResult Create()
         {
-            ViewData["MenuId"] = new SelectList(_context.MenuItems, "Id", "Id");
+            var menuItems = _context.MenuItems.ToList();
+
+            List<SelectListItem> menuItemsList = menuItems.Select(menu => 
+            new SelectListItem
+            {
+                Text = menu.Name,
+                Value = menu.Id.ToString(),
+            }).ToList();
+            ViewData["MenuId"] = menuItemsList;
+
+            //ViewData["MenuId"] = new SelectList(_context.MenuItems, "Id", "Id");
             return View();
         }
 
@@ -103,7 +113,19 @@ namespace RestaurantReservationSystem.Controllers
             {
                 return NotFound();
             }
-            ViewData["MenuId"] = new SelectList(_context.MenuItems, "Id", "Id", dailySpecial.MenuId);
+            //ViewData["MenuId"] = new SelectList(_context.MenuItems, "Id", "Id", dailySpecial.MenuId);
+
+            var menuItems = _context.MenuItems.ToList();
+
+            List<SelectListItem> menuItemsList = menuItems.Select(menu =>
+            new SelectListItem
+            {
+                Text = menu.Name,
+                Value = menu.Id.ToString(),
+            }).ToList();
+            ViewData["MenuId"] = menuItemsList;
+
+
             return View(dailySpecial);
         }
 
