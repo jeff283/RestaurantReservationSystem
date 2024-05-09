@@ -28,12 +28,13 @@
 
 <div class="d-flex justify-content-between align-items-center">
     <p>
-        <a asp-action="Create">Create New</a>
+        
+        <a class="btn btn-danger bg-red-custom" asp-action="Create" role="button">Create New</a>
     </p>
     @if (User.IsInRole("Staff"))
     {
     <p>
-        <a asp-action="Report">Generate Report</a>
+            <a class="btn btn-outline-danger" asp-action="Report" role="button">Generate Report</a>
     </p>
         
     }
@@ -96,9 +97,15 @@
             </td>
                 }
             <td>
+
+                    <div class="btn-group">
+                        <a asp-action="Details" asp-route-id="@item.Id" role="button" class="btn btn-sm btn-outline-secondary">Details</a>
+                        <a asp-action="Edit" asp-route-id="@item.Id" role="button" class="btn btn-sm btn-outline-secondary">Edit</a>
+                    </div>
+                <!--
+                        <a asp-action="Delete" asp-route-id="@item.Id" role="button" class="btn btn-sm btn-outline-secondary">Delete</a>
                 <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
                 <a asp-action="Details" asp-route-id="@item.Id">Details</a> 
-                <!--
                 <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
                     -->
             </td>

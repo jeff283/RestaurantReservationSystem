@@ -16,7 +16,7 @@
 
 @if (User.IsInRole("Staff")){
     <p>
-        <a class="btn btn-primary bg-red-custom" asp-action="Create" role="button">Create New</a>
+        <a class="btn btn-danger bg-red-custom" asp-action="Create" role="button">Create New</a>
     </p>
 }
 
@@ -64,3 +64,25 @@
         </div>
       </div>
 
+<table class="table mt-lg-5">
+    <thead>
+        <tr>
+            <th scope="col">#</th>
+            <th scope="col">Student ID</th>
+            <th scope="col">Full Names</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <th scope="row">1</th>
+            <td>ID1</td>
+            <td>John</td>
+        </tr>
+        <tr>
+            <th scope="row">2</th>
+            <td>ID2</td>
+            <td>Doe</td>
+        </tr>
+
+    </tbody>
+</table>
