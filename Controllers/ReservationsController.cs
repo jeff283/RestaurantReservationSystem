@@ -40,14 +40,16 @@ namespace RestaurantReservationSystem.Controllers
             {
                 var applicationDbContext = _context.Reservations
                 .Where(u => u.IdentityUserId == currentUser.Id)
-                .Include(r => r.User).Include(t => t.RestaurantTable)
+                .Include(r => r.User)
+                .Include(t => t.RestaurantTable)
                 .Include(s => s.RestaurantTable.SeatingArea);
                 return View(await applicationDbContext.ToListAsync());
 
             }
 
             var applicationDbContextStaff = _context.Reservations
-            .Include(r => r.User).Include(t => t.RestaurantTable)
+            .Include(r => r.User)
+            .Include(t => t.RestaurantTable)
             .Include(s => s.RestaurantTable.SeatingArea);
 
             return View(await applicationDbContextStaff.ToListAsync());
@@ -56,20 +58,45 @@ namespace RestaurantReservationSystem.Controllers
         // GET: Reservations/Details/5
         public async Task<IActionResult> Details(int? id)
         {
+
             if (id == null)
             {
                 return NotFound();
             }
 
-            var reservation = await _context.Reservations
-                .Include(r => r.User)
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (reservation == null)
+            var currentUser = await _userManager.GetUserAsync(User);
+            if (currentUser == null)
             {
                 return NotFound();
             }
 
-            return View(reservation);
+            if (!User.IsInRole("Staff"))
+            {
+                var reservation = await _context.Reservations
+                .Where(u => u.IdentityUserId == currentUser.Id)
+                .Include(r => r.User)
+                .Include(t => t.RestaurantTable)
+                .Include(s => s.RestaurantTable.SeatingArea)
+                .FirstOrDefaultAsync(m => m.Id == id);
+                if (reservation == null)
+                {
+                    return NotFound();
+                }
+
+                return View(reservation);
+            }
+
+            var reservationStaff = await _context.Reservations
+               .Include(r => r.User)
+               .Include(t => t.RestaurantTable)
+               .Include(s => s.RestaurantTable.SeatingArea)
+               .FirstOrDefaultAsync(m => m.Id == id);
+            if (reservationStaff == null)
+            {
+                return NotFound();
+            }
+
+            return View(reservationStaff);
         }
 
         // GET: Reservations/Create
