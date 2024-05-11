@@ -47,58 +47,79 @@ namespace RestaurantReservationSystem
                 pattern: "{controller=MenuItems}/{action=Index}/{id?}");
             app.MapRazorPages();
 
-            //Seed Roles
+
+
+
+            // Initial DB Fix
             using (var scope = app.Services.CreateScope())
             {
-                var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
-                var roles = new[] { "Staff", "Customer" };
+                var services = scope.ServiceProvider;
 
-                foreach (var role in roles)
+                try
                 {
-                    if (!await roleManager.RoleExistsAsync(role))
+                    var context = services.GetRequiredService<ApplicationDbContext>();
+                    var userManager = services.GetRequiredService<UserManager<IdentityUser>>();
+                    var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
+
+                    // Apply migrations and create/update the database
+                    await context.Database.MigrateAsync();
+
+                    // Seed roles
+                    var roles = new[] { "Staff", "Customer" };
+                    foreach (var role in roles)
                     {
-                        await roleManager.CreateAsync(new IdentityRole(role));
+                        if (!await roleManager.RoleExistsAsync(role))
+                        {
+                            await roleManager.CreateAsync(new IdentityRole(role));
+                        }
                     }
+
+                    // Seed users
+                    await SeedUsersAsync(userManager);
+                }
+                catch (Exception ex)
+                {
+                    // Log any errors
+                    Console.WriteLine("An error occurred while seeding the database: " + ex.Message);
                 }
             }
+            // Initial DB Fix code ends here
 
-            //Seed Tester User
-            using (var scope = app.Services.CreateScope())
-            {
-                var userManager = scope.ServiceProvider.GetRequiredService<UserManager<IdentityUser>>();
-
-                string adminEmail = "admin@tester.com";
-                string adminPassword = "TestAdmin1;";
-
-
-
-                if (await userManager.FindByEmailAsync(adminEmail) == null)
-                {
-                    var user = new IdentityUser(adminEmail);
-                    user.UserName = adminEmail;
-                    user.Email = adminEmail;
-
-                    await userManager.CreateAsync(user, adminPassword);
-                    await userManager.AddToRoleAsync(user, "Staff");
-                }
-
-                string customerEmail = "customer@tester.com";
-                string customerPassword = "TestCustomer1;;";
-
-                if (await userManager.FindByEmailAsync(customerEmail) == null)
-                {
-                    var user = new IdentityUser(customerEmail);
-                    user.UserName = customerEmail;
-                    user.Email = customerEmail;
-
-                    await userManager.CreateAsync(user, customerPassword);
-                    await userManager.AddToRoleAsync(user, "Customer");
-                }
-
-         
-            }
 
             app.Run();
+        }
+
+        // Method to seed users
+        private static async Task SeedUsersAsync(UserManager<IdentityUser> userManager)
+        {
+            // User seeding logic here
+            string adminEmail = "admin@tester.com";
+            string adminPassword = "TestAdmin1;";
+
+
+
+            if (await userManager.FindByEmailAsync(adminEmail) == null)
+            {
+                var user = new IdentityUser(adminEmail);
+                user.UserName = adminEmail;
+                user.Email = adminEmail;
+
+                await userManager.CreateAsync(user, adminPassword);
+                await userManager.AddToRoleAsync(user, "Staff");
+            }
+
+            string customerEmail = "customer@tester.com";
+            string customerPassword = "TestCustomer1;;";
+
+            if (await userManager.FindByEmailAsync(customerEmail) == null)
+            {
+                var user = new IdentityUser(customerEmail);
+                user.UserName = customerEmail;
+                user.Email = customerEmail;
+
+                await userManager.CreateAsync(user, customerPassword);
+                await userManager.AddToRoleAsync(user, "Customer");
+            }
         }
     }
 }
