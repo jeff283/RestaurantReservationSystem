@@ -1,0 +1,62 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+
+
+@import url("https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300..800;1,300..800&display=swap");
+
+/* CSS Variables */
+:root {
+    --primary-color: #E6D7B8;
+    --secondary-color: #FFEECA;
+    --tertiary-color: #C0462F;
+    --primary-light: #FFFFFF;
+    --primary-dark: #101010;
+    --secondary-dark: #000000;
+}
+
+html {
+  font-size: 16px;
+}
+
+@media (min-width: 768px) {
+  html {
+    font-size: 16px;
+  }
+}
+
+.btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
+  box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
+}
+
+html {
+  position: relative;
+  min-height: 100%;
+}
+
+body {
+    margin-bottom: 60px;
+    font-family: "Open Sans", sans-serif;
+    font-optical-sizing: auto;
+    font-style: normal;
+    font-variation-settings: "wdth" 100;
+    background-color: var(--secondary-color);
+}
+
+
+
+
+.bg-red-custom {
+    background-color: var(--tertiary-color) !important;
+}
+
+.bg-main-custom {
+    background-color: var(--secondary-color) !important;
+}
+
+.rounded-top-clip {
+    overflow: hidden;
+    border-top-left-radius: 20px;
+    border-top-right-radius: 20px;
+}
